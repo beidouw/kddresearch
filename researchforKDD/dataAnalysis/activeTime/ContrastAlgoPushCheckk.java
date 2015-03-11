@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 
-public class PushTimeIntervalCheck {
+public class ContrastAlgoPushCheckk {
 	
-	public void generatHisto(String inputpath,String outpath) throws Exception{
+	public void generatHisto(String inputpath,String dic1,String dic2,String outpath) throws Exception{
 		
 		Connection conn,conn2,conntest;
 		Statement stmt,stmt2,stmt3;
@@ -39,7 +39,35 @@ public class PushTimeIntervalCheck {
 		int[][] histopush=new int [24][12];
 		long activities=0,pushhit=0,opentimes=0;
 				//iterate all files
-		File f=new File(inputpath);
+		
+		
+		HashMap<String, String> dica=new HashMap<String, String>();
+		HashMap<String, String> dicb=new HashMap<String, String>();
+	
+		File f=new File(dic1);
+		BufferedReader r=new BufferedReader(new FileReader(f));
+		String line="";
+		while((line=r.readLine())!=null){
+			String[] t=line.split(",");
+			for(int i=0;i<t.length;i++){
+				dica.put(t[i], "yes");
+			}
+			
+		}
+		
+		f=new File(dic2);
+		r=new BufferedReader(new FileReader(f));
+		line="";
+		while((line=r.readLine())!=null){
+			String[] t=line.split(",");
+			for(int i=0;i<t.length;i++){
+				dicb.put(t[i], "yes");
+			}
+			
+		}
+		
+		
+		f=new File(inputpath);
 		File[] files=f.listFiles();
 		System.out.println(inputpath);
 		HashMap<String, String> mapnews=new HashMap<String, String>();
@@ -50,9 +78,9 @@ public class PushTimeIntervalCheck {
 				
 				int[][] histoforone=new int [24][12];
 				BufferedReader br=new BufferedReader(new FileReader(files[i]));
-				String[] tnames=files[i].getAbsolutePath().split("/");
+				String[] tnames=files[i].getAbsolutePath().split("\\\\");
 				String wuid=tnames[tnames.length-1].replaceAll(".csv","");
-				String line="";
+				 line="";
 				
 				while((line=br.readLine())!=null){
 					
@@ -90,7 +118,7 @@ public class PushTimeIntervalCheck {
 									
 								}
 								
-								news+=t[6];
+								news+=t[6]+","+title.replaceAll(",", "，");
 								if(mapnews.get(t[6])==null){
 									mapnews.put(t[6], news);
 								}
@@ -102,16 +130,15 @@ public class PushTimeIntervalCheck {
 						}
 						
 						if(t[4].equals("video")){
-							
+							if(t.length<7){
+								System.out.println("video parameter miss");
+								continue;
+							}
 							String sql="select * from episodes_urls where rageeid='"+t[6]+"'";
 //							System.out.println(sql);
 							res=stmt.executeQuery(sql);
 							if(res.next()){
-								
-								
 								old=Long.parseLong(res.getString("timestamp"));
-								
-								
 							}else{
 								continue;
 							}
@@ -122,13 +149,11 @@ public class PushTimeIntervalCheck {
 						if(old>current){
 							old=current;
 						}
-						int intervalminute=0;
+						
 						if(old==0){
-							interval=0;
-							intervalminute=5;
+							interval=5;
 						}else{
 							interval=(current-old)/3600000;
-							intervalminute=(int) ((current-old)/60000);
 						}
 						
 						PushItem p=new PushItem(old,current,interval,t[4]);
@@ -136,7 +161,6 @@ public class PushTimeIntervalCheck {
 						p.pushminute=hour*60+minute;
 						p.wrepost_count=wrepost_count;
 						p.newsid=news;
-						p.intervalminute=intervalminute;
 						map.put(index, p);
 						continue;
 						
@@ -159,36 +183,43 @@ public class PushTimeIntervalCheck {
 					
 					
 				}
-				
+				int call=0,chit=0;
 				for (PushItem p : map.values()) {  
-					  
+					 call++;
+					 if(p.success==1){
+						 chit++;
+					 }
+					 
 				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all"+outpath+".csv");
 				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all_"+p.type+""+outpath+".csv");
-				    if(p.wrepost_count>100){
-				    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular100"+outpath+".csv");
-
-				    }
-				    
-				    if(p.wrepost_count>0){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_all"+outpath+".csv");
-
-					    }
-				    
-				    if(p.wrepost_count>50){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular50"+outpath+".csv");
-
-					    }
-				    if(p.wrepost_count>150){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular150"+outpath+".csv");
-
-					    }
+//				    if(p.wrepost_count>100){
+				    save(p.interval+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular"+outpath+".csv");
+//				    if(p.type.equals("news")){
+//					    save(p.newsid+"\r\n","d:\\\\all_"+p.type+"_dict_"+outpath+".csv");
+//				    }
+//				    }
 				} 
+				int dicflag=1;
+				if(dica.get(wuid)!=null){
+					save(wuid+","+call+","+chit+"\r\n","d:\\\\result_groupa_"+outpath+".csv");
+					dicflag=0;
+
+				}
 				
-				
+				if(dicb.get(wuid)!=null){
+					save(wuid+","+call+","+chit+"\r\n","d:\\\\result_groupb_"+outpath+".csv");
+					dicflag=0;
+				}
+				if(dicflag==1){
+					save(wuid+","+call+","+chit+"\r\n","d:\\\\result_groupc_"+outpath+".csv");
+				}
+				save(wuid+","+call+","+chit+"\r\n","d:\\\\result_"+outpath+".csv");
 				
 				
 			}catch(Exception e){
 				e.printStackTrace();
+				System.out.println(line);
+//				System.exit(-1);
 			}
 		}
 		

@@ -1,15 +1,43 @@
 package activeTime;
 
 import java.io.*;
+import java.util.HashMap;
 
-public class GenerateHistoGram {
+public class ContrastAlgo {
 	
-	public void generatHisto(String inputpath,String outpath) throws Exception{
+	public void generatHisto(String inputpath,String dic1,String dic2,String outpath) throws Exception{
 		int[][] histo=new int [24][12];
 		int[][] histopush=new int [24][12];
 		long activities=0,push=0,opentimes=0;
 				//iterate all files
-		File f=new File(inputpath);
+		HashMap<String, String> dica=new HashMap<String, String>();
+		HashMap<String, String> dicb=new HashMap<String, String>();
+	
+		File f=new File(dic1);
+		BufferedReader r=new BufferedReader(new FileReader(f));
+		String line="";
+		while((line=r.readLine())!=null){
+			String[] t=line.split(",");
+			for(int i=0;i<t.length;i++){
+				dica.put(t[i], "yes");
+			}
+			
+		}
+		
+		f=new File(dic2);
+		r=new BufferedReader(new FileReader(f));
+		line="";
+		while((line=r.readLine())!=null){
+			String[] t=line.split(",");
+			for(int i=0;i<t.length;i++){
+				dicb.put(t[i], "yes");
+			}
+			
+		}
+		
+		
+		
+		f=new File(inputpath);
 		File[] files=f.listFiles();
 		System.out.println(inputpath);
 		for(int i=0;i<files.length;i++){
@@ -20,7 +48,7 @@ public class GenerateHistoGram {
 				BufferedReader br=new BufferedReader(new FileReader(files[i]));
 				String[] tnames=files[i].getAbsolutePath().split("/");
 				String wuid=tnames[tnames.length-1].replaceAll(".csv","");
-				String line="";
+				line="";
 				int otforone=0,acforone=0,pushforone=0;
 				while((line=br.readLine())!=null){
 					
@@ -84,9 +112,6 @@ public class GenerateHistoGram {
 			String line1="";
 			for(int k=0;k<12;k++){
 				line1+=j+":"+k*5+","+histo[j][k]+"\r\n";
-				for(int l=0;l<histo[j][k];l--){
-					save((j*12+l)+"\r\n",outpath+"allhisto.txt");
-				}
 			}
 			
 			save(""+line1,outpath+"allhisto.txt");

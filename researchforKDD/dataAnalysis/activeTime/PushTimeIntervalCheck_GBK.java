@@ -7,30 +7,21 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 
-public class PushTimeIntervalCheck {
+public class PushTimeIntervalCheck_GBK {
 	
 	public void generatHisto(String inputpath,String outpath) throws Exception{
 		
 		Connection conn,conn2,conntest;
 		Statement stmt,stmt2,stmt3;
 		ResultSet res,res2;
-		   
-		   
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		   
-		   
-		   //������MySQL������
 		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/ikanfou",
 		                                      "root", "4150484");
-		
 		conn2 = DriverManager.getConnection("jdbc:mysql://localhost:3306/ikanfou",
                 "root", "4150484");
-                
-		 //ִ��SQL���
+   
 		stmt = conn2.createStatement();
-       
-		stmt2 = conn2.createStatement();
-		
+		stmt2 = conn2.createStatement();	
 		stmt3 = conn2.createStatement();
 		
 		
@@ -90,7 +81,7 @@ public class PushTimeIntervalCheck {
 									
 								}
 								
-								news+=t[6];
+								news+=t[6]+","+title.replaceAll(",", "");
 								if(mapnews.get(t[6])==null){
 									mapnews.put(t[6], news);
 								}
@@ -122,13 +113,11 @@ public class PushTimeIntervalCheck {
 						if(old>current){
 							old=current;
 						}
-						int intervalminute=0;
+						
 						if(old==0){
-							interval=0;
-							intervalminute=5;
+							interval=5;
 						}else{
 							interval=(current-old)/3600000;
-							intervalminute=(int) ((current-old)/60000);
 						}
 						
 						PushItem p=new PushItem(old,current,interval,t[4]);
@@ -136,7 +125,6 @@ public class PushTimeIntervalCheck {
 						p.pushminute=hour*60+minute;
 						p.wrepost_count=wrepost_count;
 						p.newsid=news;
-						p.intervalminute=intervalminute;
 						map.put(index, p);
 						continue;
 						
@@ -160,29 +148,17 @@ public class PushTimeIntervalCheck {
 					
 				}
 				
-				for (PushItem p : map.values()) {  
-					  
-				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all"+outpath+".csv");
-				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all_"+p.type+""+outpath+".csv");
-				    if(p.wrepost_count>100){
-				    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular100"+outpath+".csv");
-
-				    }
-				    
-				    if(p.wrepost_count>0){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_all"+outpath+".csv");
-
-					    }
-				    
-				    if(p.wrepost_count>50){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular50"+outpath+".csv");
-
-					    }
-				    if(p.wrepost_count>150){
-					    save(p.interval+","+p.intervalminute+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular150"+outpath+".csv");
-
-					    }
-				} 
+//				for (PushItem p : map.values()) {  
+//					  
+//				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all"+outpath+".csv");
+//				    save(p.interval+","+p.success+","+p.wrepost_count+"\r\n","d:\\\\all_"+p.type+""+outpath+".csv");
+////				    if(p.wrepost_count>100){
+//				    save(p.interval+","+p.pushminute+","+p.pushhour+","+p.success+","+p.wrepost_count+","+p.newsid+"\r\n","d:\\\\all_"+p.type+"_popular"+outpath+".csv");
+////				    if(p.type.equals("news")){
+////					    save(p.newsid+"\r\n","d:\\\\all_"+p.type+"_dict_"+outpath+".csv");
+////				    }
+////				    }
+//				} 
 				
 				
 				
@@ -195,11 +171,11 @@ public class PushTimeIntervalCheck {
 		for (String p : mapnews.values()) {  
 			  
 		     
-			   save(p+"\r\n","d:\\\\all_news_dict_"+outpath+".csv");
+			   save(p+",1"+"\r\n","d:\\\\all_news_dict_"+outpath+".csv");
 		    
 //		    }
 		} 
-		save(""+pushhit+"\r\n",outpath+"allhistopushhit.txt");
+//		save(""+pushhit+"\r\n",outpath+"allhistopushhit.txt");
 		
 		for(int j=0;j<24;j++){
 			String line1="";
