@@ -15,6 +15,7 @@ public class GenerateHistoGramForPushNotification {
 		for(int i=0;i<files.length;i++){
 			
 			try{
+				
 				long old=0,timeinterval=0;
 				String oldtype="";
 				int[][] histoforone=new int [24][12];
