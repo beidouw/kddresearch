@@ -1,4 +1,4 @@
-package create;
+package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +14,7 @@ import com.facepp.error.FaceppParseException;
 import com.facepp.http.HttpRequests;
 import com.facepp.http.PostParameters;
 
-public class AddActor {
+public class CorrectFaceid {
 	
 	public Connection con,conn2,conntest;
 	public Statement stmt,stmt2;
@@ -25,7 +25,7 @@ public class AddActor {
 	public final String sqlURL="jdbc:mysql://localhost:3306/ikanfou?useUnicode=true&characterEncoding=utf8";
 	public final String user="root";
 	public final String	pwd="4150484";
-	public AddActor() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+	public CorrectFaceid() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 		
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		con = DriverManager.getConnection(sqlURL,user,pwd);
@@ -35,13 +35,13 @@ public class AddActor {
 
 	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, FaceppParseException, JSONException{
 		System.out.println("add actor");
-		AddActor a=new AddActor();
+		CorrectFaceid a=new CorrectFaceid();
 		a.Add();
 	}
 	
 	
 	public void Add() throws SQLException, FaceppParseException, JSONException{
-		String sql="select * from actors_new where imageurl!= ? and faceid is null";
+		String sql="select * from actors_new where imageurl!= ? and faceid is not null";
 		ps=con.prepareStatement(sql);
 		ps.setString(1, "null");
 		res=ps.executeQuery();

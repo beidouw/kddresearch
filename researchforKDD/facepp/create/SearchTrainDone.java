@@ -8,7 +8,7 @@ import com.facepp.http.HttpRequests;
 import com.facepp.http.PostParameters;
 
 public class SearchTrainDone {
-	public static String sessionid="actor";
+	public static String sessionid="e9c6f72765794603a6c1367d78ed857b";
 	public static void main(String[] args) throws FaceppParseException, JSONException {
 		// TODO Auto-generated method stub
 		

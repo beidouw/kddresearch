@@ -20,7 +20,7 @@ public class FacsetSearchTrain {
 		JSONObject syncRet = null; 
 		
 		System.out.println("\ntrain/Identify");
-		syncRet = httpRequests.trainSearch(new PostParameters().setFacesetId("actor"));
+		syncRet = httpRequests.trainSearch(new PostParameters().setFacesetName("actor"));
 		System.out.println(syncRet);
 		System.out.println(httpRequests.getSessionSync(syncRet.getString("session_id")));
 		
